@@ -12,9 +12,9 @@ import {
 import { useState } from 'react';
 
 import { Ionicons } from '@expo/vector-icons'
-import { Card } from '../components/Card';
+import {Card} from "../../src/components/Card";
 
-export function Swap() {
+export default function Swap() {
     const [fromAmount, setFromAmount] = useState("100")
     const [toAmount, setToAmount] = useState("0.28014")
     const [fromToken, setFromToken] = useState("USDC")
@@ -39,36 +39,41 @@ export function Swap() {
 
 
     return (
-        <ScrollView style={s.scroll} contentContainerStyle={s.content}>
-            <Text style={s.title}>Swap Token</Text>
+        <SafeAreaView style={s.safe}>
+            <ScrollView style={s.scroll} contentContainerStyle={s.content}>
+                <Text style={s.title}>Swap Token</Text>
 
-            <Card token={fromAmount} setToken={setFromAmount} />
+                <Card token={fromAmount} setToken={setFromAmount} />
 
-            <View style={s.arrowContainer}>
-                <TouchableOpacity style={s.swapArrow} onPress={swapToken}>
-                    <Ionicons name="arrow-down" size={20} color="#FFF" />
-                </TouchableOpacity>
-            </View>
+                <View style={s.arrowContainer}>
+                    <TouchableOpacity style={s.swapArrow} onPress={swapToken}>
+                        <Ionicons name="arrow-down" size={20} color="#FFF" />
+                    </TouchableOpacity>
+                </View>
 
-            <Card token={toAmount} setToken={setToAmount} />
+                <Card token={toAmount} setToken={setToAmount} />
 
-            <View>
-                <TouchableOpacity onPress={handleSwap} style = {s.swapBtn}>
-                    <Text style = {s.swapText}>Swap</Text>
-                </TouchableOpacity>
-            </View>
-        </ScrollView>
+                <View>
+                    <TouchableOpacity onPress={handleSwap} style = {s.swapBtn}>
+                        <Text style = {s.swapText}>Swap</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 
 const s = StyleSheet.create({
     // ScrollView itself
-    scroll: {
+    safe: {
         flex: 1,
         backgroundColor: "#0D0D12",
     },
 
-    // Content inside ScrollView
+    scroll: {
+        flex: 1,
+    },
+
     content: {
         paddingHorizontal: 24,
         paddingTop: 20,
@@ -204,14 +209,14 @@ const s = StyleSheet.create({
         alignItems : "center" ,
         justifyContent : "center",
         marginTop : 20,
-        borderWidth : 1 , 
+        borderWidth : 1 ,
         shadowColor : "#14F195",
         borderColor: "#252530"
     },
     swapText : {
-        color : "#0D0D12" , 
+        color : "#0D0D12" ,
         fontWeight : "600",
         fontSize : 16 ,
-        letterSpacing : 0.3 
+        letterSpacing : 0.3
     }
 });
