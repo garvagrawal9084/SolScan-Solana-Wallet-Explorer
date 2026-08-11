@@ -1,12 +1,14 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface WalletStore {
     // Data
-    favorites: string[] // saved wallet address
-    searchHistory: string[] // recently search address
-    isDevnet: boolean   // devnet  vs mainnet toggle 
+    favorites: string[];
+    searchHistory: string[];
+    isDevnet: boolean;
 
-    // Actions 
+    // Actions
     addFavorites: (address: string) => void;
     removeFavorites: (address: string) => void;
     isFavorite: (address: string) => boolean;
@@ -15,41 +17,54 @@ interface WalletStore {
     toggleNetwork: () => void;
 }
 
-export const useWalletStore = create<WalletStore>((set, get) => ({
-    favorites: [],
-    searchHistory: [],
-    isDevnet: false,
+export const useWalletStore = create<WalletStore>()(
+    persist(
+        (set, get) => ({
+            favorites: [],
+            searchHistory: [],
+            isDevnet: false,
 
-    addFavorites: (address) =>
-        set((state) => ({
-            favorites: state.favorites.includes(address)
-                ? state.favorites
-                : [address, ...state.favorites]
-        })),
+            addFavorites: (address) =>
+                set((state) => ({
+                    favorites: state.favorites.includes(address)
+                        ? state.favorites
+                        : [address, ...state.favorites],
+                })),
 
-    removeFavorites: (address) => 
-        set((state) => ({
-            favorites : state.favorites.filter((a) => a !== address) 
-        })),
+            removeFavorites: (address) =>
+                set((state) => ({
+                    favorites: state.favorites.filter(
+                        (a) => a !== address
+                    ),
+                })),
 
-    isFavorite: (address) => 
-        get().favorites.includes(address) ,
+            isFavorite: (address) =>
+                get().favorites.includes(address),
 
-    addToHistory: (address) => 
-        set((state) => ({
-            searchHistory: [
-                address,
-                ...state.searchHistory.filter((a) => a !== address),
-            ].slice(0  , 20)
-        })),
+            addToHistory: (address) =>
+                set((state) => ({
+                    searchHistory: [
+                        address,
+                        ...state.searchHistory.filter(
+                            (a) => a !== address
+                        ),
+                    ].slice(0, 20),
+                })),
 
-    clearHistory: () => 
-        set(({
-            searchHistory : []
-        })) ,
+            clearHistory: () =>
+                set({
+                    searchHistory: [],
+                }),
 
-    toggleNetwork : () => 
-        set((state) => ({
-            isDevnet: !state.isDevnet
-        })),
-}));
+            toggleNetwork: () =>
+                set((state) => ({
+                    isDevnet: !state.isDevnet,
+                })),
+        }),
+        {
+            name: "wallet-storage",
+
+            storage: createJSONStorage(() => AsyncStorage),
+        }
+    )
+);
